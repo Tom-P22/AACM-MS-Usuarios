@@ -1,10 +1,17 @@
 package cl.municipalidad.usuarios.dto;
 
-public class UsuarioResponseDTO {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    Long id;
-    String rut;
-    String nombre;
-    String email;
-    String rol;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class UsuarioResponseDTO {
+    private Long id;
+    private String rut;
+    private String nombre;
+    private String email;
+    private String rol;
 }

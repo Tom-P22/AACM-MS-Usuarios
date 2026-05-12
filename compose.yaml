@@ -3,11 +3,27 @@ services:
     image: 'mysql:latest'
     container_name: 'MS-usuarios_bd'
     environment:
-      - 'MYSQL_DATABASE=db_usuarios'
+      - 'MYSQL_DATABASE=bd_usuarios'
       - 'MYSQL_ROOT_PASSWORD=root'
 
     ports:
       - '3307:3306'
+
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: MS_usuarios_gui
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - '8080:80'
 
       #Actualmente estamos en entorno local, se desabilitaran estos parametros
       #- 'MYSQL_USER=admin'
