@@ -38,4 +38,8 @@ private String password;
 
 @Column(nullable = false)
 private String rol;
+
+@Builder.Default
+private boolean activo = true;
+
 }
