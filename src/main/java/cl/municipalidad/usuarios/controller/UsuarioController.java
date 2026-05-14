@@ -53,4 +53,14 @@ public class UsuarioController {
         usuarioService.eliminarUsuario(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UsuarioResponseDTO> listarPorEmail(@PathVariable String email) {
+        return ResponseEntity.ok(usuarioService.obtenerUsuarioPorEmail(email));
+    }
+
+    @GetMapping("/rut/{rut}")
+    public ResponseEntity<UsuarioResponseDTO> listarPorRut(@PathVariable String rut) {
+        return ResponseEntity.ok(usuarioService.obtenerUsuarioPorRut(rut));
+    }
 }

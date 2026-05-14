@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import cl.municipalidad.usuarios.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
-    Optional<Usuario> findByRut(String rut);
+    Optional<Usuario> findByRutAndActivoTrue(String rut);
     
-    Optional<Usuario> findByEmail(String email);
+    Optional<Usuario> findByEmailAndActivoTrue(String email);
 
     List<Usuario> findByActivoTrue();
 

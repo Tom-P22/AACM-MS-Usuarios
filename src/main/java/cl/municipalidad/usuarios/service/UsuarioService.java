@@ -11,7 +11,6 @@ import cl.municipalidad.usuarios.model.Usuario;
 import cl.municipalidad.usuarios.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 
-
 @Service
 @RequiredArgsConstructor
 
@@ -22,7 +21,7 @@ public class  UsuarioService {
 
     public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO request) {
 
-        if(usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
+        if(usuarioRepository.findByEmailAndActivoTrue(request.getEmail()).isPresent()) {
             throw new RuntimeException("El email ya está registrado");
         }
 
@@ -31,7 +30,8 @@ public class  UsuarioService {
                 .nombre(request.getNombre())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .rol(request.getRol())
+                .rolUsuario(request.getRolUsuario())
+                .tipoUsuario(request.getTipoUsuario())
                 .build();
 
         Usuario usuarioGuardado = usuarioRepository.save(nuevoUsuario);
@@ -41,7 +41,8 @@ public class  UsuarioService {
                 usuarioGuardado.getRut(),
                 usuarioGuardado.getNombre(),
                 usuarioGuardado.getEmail(),
-                usuarioGuardado.getRol()
+                usuarioGuardado.getTipoUsuario(),
+                usuarioGuardado.getRolUsuario()
             );
         }
 
@@ -54,27 +55,29 @@ public class  UsuarioService {
                         usuario.getRut(),
                         usuario.getNombre(),
                         usuario.getEmail(),
-                        usuario.getRol()
+                        usuario.getTipoUsuario(),
+                        usuario.getRolUsuario()
                 ))
                 .toList();
         }   
 
     public UsuarioResponseDTO obtenerUsuarioPorId(Long id) {
         Usuario usuario = usuarioRepository.findByIdAndActivoTrue(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Usuario inactivo o no existente con ID: " + id));
 
                 return UsuarioResponseDTO.builder()
                         .id(usuario.getId())
                         .rut(usuario.getRut())
                         .nombre(usuario.getNombre())
                         .email(usuario.getEmail())
-                        .rol(usuario.getRol())
+                        .rolUsuario(usuario.getRolUsuario())
+                        .tipoUsuario(usuario.getTipoUsuario())
                         .build();
     }
 
     public void eliminarUsuario(Long id) {
         Usuario usuario = usuarioRepository.findByIdAndActivoTrue(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Usuario inactivo o no existente con ID: " + id));
 
         usuario.setActivo(false);
         usuarioRepository.save(usuario);
@@ -83,18 +86,18 @@ public class  UsuarioService {
 
     public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioRequestDTO request) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Usuario inactivo o no existente con ID: " + id));
 
         if (!usuario.getEmail().equals(request.getEmail()) && 
-            usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
+            usuarioRepository.findByEmailAndActivoTrue(request.getEmail()).isPresent()) {
             throw new RuntimeException("El email ya está registrado");
         }
 
         usuario.setRut(request.getRut());
         usuario.setNombre(request.getNombre());
         usuario.setEmail(request.getEmail());
-        usuario.setRol(request.getRol());
-
+        usuario.setRolUsuario(request.getRolUsuario());
+        usuario.setTipoUsuario(request.getTipoUsuario());
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             usuario.setPassword(passwordEncoder.encode(request.getPassword()));
         }
@@ -106,20 +109,36 @@ public class  UsuarioService {
                 usuarioActualizado.getRut(),
                 usuarioActualizado.getNombre(),
                 usuarioActualizado.getEmail(),
-                usuarioActualizado.getRol()
+                usuarioActualizado.getTipoUsuario(),
+                usuarioActualizado.getRolUsuario()
         );
     }
 
     public UsuarioResponseDTO obtenerUsuarioPorEmail(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con email: " + email));
+        Usuario usuario = usuarioRepository.findByEmailAndActivoTrue(email)
+                .orElseThrow(() -> new RuntimeException("Usuario inactivo o no existente con email: " + email));
 
         return new UsuarioResponseDTO(
                 usuario.getId(),
                 usuario.getRut(),
                 usuario.getNombre(),
                 usuario.getEmail(),
-                usuario.getRol()
+                usuario.getTipoUsuario(),
+                usuario.getRolUsuario()
+        );
+    }
+
+    public UsuarioResponseDTO obtenerUsuarioPorRut(String rut) {
+        Usuario usuario = usuarioRepository.findByRutAndActivoTrue(rut)
+                .orElseThrow(() -> new RuntimeException("Usuario inactivo o no existente con RUT: " + rut));
+
+        return new UsuarioResponseDTO(
+                usuario.getId(),
+                usuario.getRut(),
+                usuario.getNombre(),
+                usuario.getEmail(),
+                usuario.getTipoUsuario(),
+                usuario.getRolUsuario()
         );
     }
 

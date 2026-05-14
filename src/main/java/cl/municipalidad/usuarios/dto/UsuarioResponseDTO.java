@@ -1,5 +1,7 @@
 package cl.municipalidad.usuarios.dto;
 
+import cl.municipalidad.usuarios.enums.RolUsuario;
+import cl.municipalidad.usuarios.enums.TipoUsuario;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,5 +16,6 @@ public class UsuarioResponseDTO {
     private String rut;
     private String nombre;
     private String email;
-    private String rol;
+    private TipoUsuario tipoUsuario;
+    private RolUsuario rolUsuario;
 }
