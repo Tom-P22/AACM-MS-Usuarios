@@ -8,9 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import cl.municipalidad.usuarios.model.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
-    Optional<Usuario> findByRutAndActivoTrue(String rut);
-    
+    boolean existsByRut(String rut);
+
+    boolean existsByEmail(String email);
+
     Optional<Usuario> findByEmailAndActivoTrue(String email);
+
+    Optional<Usuario> findByRutAndActivoTrue(String rut);
 
     List<Usuario> findByActivoTrue();
 

@@ -21,8 +21,12 @@ public class  UsuarioService {
 
     public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO request) {
 
-        if(usuarioRepository.findByEmailAndActivoTrue(request.getEmail()).isPresent()) {
+        if(usuarioRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está registrado");
+        }
+
+        if(usuarioRepository.existsByRut(request.getRut())) {
+            throw new RuntimeException("El RUT ya está registrado");
         }
 
         Usuario nuevoUsuario = Usuario.builder()
@@ -89,8 +93,13 @@ public class  UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Usuario inactivo o no existente con ID: " + id));
 
         if (!usuario.getEmail().equals(request.getEmail()) && 
-            usuarioRepository.findByEmailAndActivoTrue(request.getEmail()).isPresent()) {
+            usuarioRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("El email ya está registrado");
+        }
+
+        if (!usuario.getRut().equals(request.getRut()) && 
+            usuarioRepository.existsByRut(request.getRut())) {
+            throw new RuntimeException("El RUT ya está registrado");
         }
 
         usuario.setRut(request.getRut());
