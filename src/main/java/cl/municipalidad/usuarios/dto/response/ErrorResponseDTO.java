@@ -1,4 +1,4 @@
-package cl.municipalidad.usuarios.dto;
+package cl.municipalidad.usuarios.dto.response;
 
 import java.time.LocalDateTime;
 

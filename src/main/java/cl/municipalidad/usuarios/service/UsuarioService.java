@@ -5,8 +5,9 @@ import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import cl.municipalidad.usuarios.dto.UsuarioRequestDTO;
-import cl.municipalidad.usuarios.dto.UsuarioResponseDTO;
+import cl.municipalidad.usuarios.dto.UsuarioAuthDTO;
+import cl.municipalidad.usuarios.dto.request.UsuarioRequestDTO;
+import cl.municipalidad.usuarios.dto.response.UsuarioResponseDTO;
 import cl.municipalidad.usuarios.model.Usuario; 
 import cl.municipalidad.usuarios.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,32 +37,19 @@ public class  UsuarioService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .rolUsuario(request.getRolUsuario())
                 .tipoUsuario(request.getTipoUsuario())
+                .activo(true)
                 .build();
 
         Usuario usuarioGuardado = usuarioRepository.save(nuevoUsuario);
 
-        return new UsuarioResponseDTO(
-                usuarioGuardado.getId(),
-                usuarioGuardado.getRut(),
-                usuarioGuardado.getNombre(),
-                usuarioGuardado.getEmail(),
-                usuarioGuardado.getTipoUsuario(),
-                usuarioGuardado.getRolUsuario()
-            );
+        return mapToDTO(usuarioGuardado);
         }
 
     public List<UsuarioResponseDTO> obtenerTodosLosUsuarios() {
         List<Usuario> usuarios = usuarioRepository.findByActivoTrue();
 
         return usuarios.stream()
-                .map(usuario -> new UsuarioResponseDTO(
-                        usuario.getId(),
-                        usuario.getRut(),
-                        usuario.getNombre(),
-                        usuario.getEmail(),
-                        usuario.getTipoUsuario(),
-                        usuario.getRolUsuario()
-                ))
+                .map(this::mapToDTO)
                 .toList();
         }   
 
@@ -69,14 +57,7 @@ public class  UsuarioService {
         Usuario usuario = usuarioRepository.findByIdAndActivoTrue(id)
                 .orElseThrow(() -> new RuntimeException("Usuario inactivo o no existente con ID: " + id));
 
-                return UsuarioResponseDTO.builder()
-                        .id(usuario.getId())
-                        .rut(usuario.getRut())
-                        .nombre(usuario.getNombre())
-                        .email(usuario.getEmail())
-                        .rolUsuario(usuario.getRolUsuario())
-                        .tipoUsuario(usuario.getTipoUsuario())
-                        .build();
+                return mapToDTO(usuario);
     }
 
     public void eliminarUsuario(Long id) {
@@ -107,48 +88,54 @@ public class  UsuarioService {
         usuario.setEmail(request.getEmail());
         usuario.setRolUsuario(request.getRolUsuario());
         usuario.setTipoUsuario(request.getTipoUsuario());
+
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             usuario.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
         Usuario usuarioActualizado = usuarioRepository.save(usuario);
 
-        return new UsuarioResponseDTO(
-                usuarioActualizado.getId(),
-                usuarioActualizado.getRut(),
-                usuarioActualizado.getNombre(),
-                usuarioActualizado.getEmail(),
-                usuarioActualizado.getTipoUsuario(),
-                usuarioActualizado.getRolUsuario()
-        );
+        return mapToDTO(usuarioActualizado);
     }
 
     public UsuarioResponseDTO obtenerUsuarioPorEmail(String email) {
         Usuario usuario = usuarioRepository.findByEmailAndActivoTrue(email)
                 .orElseThrow(() -> new RuntimeException("Usuario inactivo o no existente con email: " + email));
 
-        return new UsuarioResponseDTO(
-                usuario.getId(),
-                usuario.getRut(),
-                usuario.getNombre(),
-                usuario.getEmail(),
-                usuario.getTipoUsuario(),
-                usuario.getRolUsuario()
-        );
+        return mapToDTO(usuario);
     }
 
     public UsuarioResponseDTO obtenerUsuarioPorRut(String rut) {
         Usuario usuario = usuarioRepository.findByRutAndActivoTrue(rut)
                 .orElseThrow(() -> new RuntimeException("Usuario inactivo o no existente con RUT: " + rut));
 
-        return new UsuarioResponseDTO(
-                usuario.getId(),
-                usuario.getRut(),
-                usuario.getNombre(),
-                usuario.getEmail(),
-                usuario.getTipoUsuario(),
-                usuario.getRolUsuario()
-        );
+                return mapToDTO(usuario);
     }
 
+    public UsuarioAuthDTO obtenerUsuarioParaAuth(String email) {
+        Usuario usuario = usuarioRepository.findByEmailAndActivoTrue(email)
+                .orElseThrow(() -> new RuntimeException("Usuario inactivo o no existente con email: " + email));
+
+        return UsuarioAuthDTO.builder()
+                .email(usuario.getEmail())
+                .password(usuario.getPassword()) 
+                .nombre(usuario.getNombre())
+                // If enum error put .rolUsuario(usuario.getRolUsuario().name())
+                .rolUsuario(usuario.getRolUsuario().name()) 
+                .activo(usuario.isActivo())
+                .build();
+    }
+    
+    private UsuarioResponseDTO mapToDTO(Usuario usuario) {
+        return UsuarioResponseDTO.builder()
+                .id(usuario.getId())
+                .rut(usuario.getRut())
+                .nombre(usuario.getNombre())
+                .email(usuario.getEmail())
+                .tipoUsuario(usuario.getTipoUsuario())
+                .rolUsuario(usuario.getRolUsuario())
+                .activo(usuario.isActivo())   
+                .build();
 }
+}
+

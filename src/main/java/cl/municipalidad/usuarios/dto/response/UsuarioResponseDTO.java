@@ -1,4 +1,4 @@
-package cl.municipalidad.usuarios.dto;
+package cl.municipalidad.usuarios.dto.response;
 
 import cl.municipalidad.usuarios.enums.RolUsuario;
 import cl.municipalidad.usuarios.enums.TipoUsuario;
@@ -18,4 +18,5 @@ public class UsuarioResponseDTO {
     private String email;
     private TipoUsuario tipoUsuario;
     private RolUsuario rolUsuario;
+    private Boolean activo;
 }

@@ -1,4 +1,4 @@
-package cl.municipalidad.usuarios.dto;
+package cl.municipalidad.usuarios.dto.request;
 
 import cl.municipalidad.usuarios.enums.RolUsuario;
 import cl.municipalidad.usuarios.enums.TipoUsuario;
@@ -6,9 +6,9 @@ import cl.municipalidad.usuarios.validations.RutValido;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor

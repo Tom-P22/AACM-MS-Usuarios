@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import cl.municipalidad.usuarios.dto.UsuarioRequestDTO;
-import cl.municipalidad.usuarios.dto.UsuarioResponseDTO;
+import cl.municipalidad.usuarios.dto.UsuarioAuthDTO;
+import cl.municipalidad.usuarios.dto.request.UsuarioRequestDTO;
+import cl.municipalidad.usuarios.dto.response.UsuarioResponseDTO;
 import cl.municipalidad.usuarios.service.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +28,17 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
+
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> registrarUsuario(@Valid @RequestBody UsuarioRequestDTO request) {
         UsuarioResponseDTO nuevoUsuario = usuarioService.crearUsuario(request);
         return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/internal/buscar/email/{email}")
+    public ResponseEntity<UsuarioAuthDTO> obtenerDatosParaAuth(@PathVariable String email) {
+    UsuarioAuthDTO authData = usuarioService.obtenerUsuarioParaAuth(email);
+    return ResponseEntity.ok(authData);
     }
 
     @GetMapping
@@ -54,12 +62,12 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/email/{email}")
+    @GetMapping("/buscar/email/{email}")
     public ResponseEntity<UsuarioResponseDTO> listarPorEmail(@PathVariable String email) {
         return ResponseEntity.ok(usuarioService.obtenerUsuarioPorEmail(email));
     }
 
-    @GetMapping("/rut/{rut}")
+    @GetMapping("/buscar/rut/{rut}")
     public ResponseEntity<UsuarioResponseDTO> listarPorRut(@PathVariable String rut) {
         return ResponseEntity.ok(usuarioService.obtenerUsuarioPorRut(rut));
     }

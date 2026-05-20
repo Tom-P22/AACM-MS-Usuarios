@@ -7,7 +7,7 @@ services:
       - 'MYSQL_ROOT_PASSWORD=root'
 
     ports:
-      - '3307:3306'
+      - '3311:3306'
 
     volumes:
       - ./mysql_data:/var/lib/mysql
@@ -23,7 +23,7 @@ services:
       PMA_USER: root
       PMA_PASSWORD: root
     ports:
-      - '8080:80'
+      - '9011:80'
 
       #Actualmente estamos en entorno local, se desabilitaran estos parametros
       #- 'MYSQL_USER=admin'
