@@ -13,9 +13,11 @@ import cl.municipalidad.usuarios.exception.ResourceNotFoundException;
 import cl.municipalidad.usuarios.model.Usuario; 
 import cl.municipalidad.usuarios.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 
 public class  UsuarioService {
 
