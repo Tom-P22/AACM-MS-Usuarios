@@ -40,9 +40,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
         try {
             String token = authHeader.substring(7).trim();
@@ -63,15 +63,21 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(auth);
 
+            filterChain.doFilter(request, response);
+
         } catch (Exception e) {
            
             System.err.println("[JWT FILTER ERROR] Error al verificar el token: " + e.getMessage());
-            e.printStackTrace();
-            
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            
+            String jsonError = String.format(
+                "{\"timestamp\":\"%s\",\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Token de seguridad inválido o corrupto: %s\"}",
+                java.time.LocalDateTime.now(), e.getMessage()
+            );
+            
+            response.getWriter().write(jsonError);
         }
-
-        filterChain.doFilter(request, response);
     }
 }
