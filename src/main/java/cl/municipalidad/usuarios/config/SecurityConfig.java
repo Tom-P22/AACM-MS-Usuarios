@@ -2,6 +2,7 @@ package cl.municipalidad.usuarios.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,18 +27,24 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers("/v3/api-docs", "/v3/api-docs/**", 
+                .requestMatchers(
+                "/v3/api-docs", 
+                "/v3/api-docs/**", 
                 "/swagger-ui/**",
                 "/swagger-ui.html",
                 "/api/v1/usuarios/doc/**",
-                "/api/v1/usuarios/v3/api-docs/**",
+                "/api/v1/usuarios/v3/api-docs",     
+                "/api/v1/usuarios/v3/api-docs/**",  
                 "/api/v1/usuarios/swagger-ui/**",
-                "/api/v1/usuarios/swagger-ui.html").permitAll()
+                "/api/v1/usuarios/swagger-ui.html"
+            ).permitAll()
+
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 
-                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/usuarios").permitAll()
-                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/usuarios/buscar/email/**").permitAll()
-                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/usuarios/buscar/rut/**").permitAll()
-                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/usuarios/internal/buscar/email/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/usuarios").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/usuarios/buscar/email/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/usuarios/buscar/rut/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/usuarios/internal/buscar/email/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
